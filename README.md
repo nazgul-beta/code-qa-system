@@ -14,8 +14,10 @@ A powerful code Q&A system that processes GitHub repositories to answer technica
 
 - Python 3.11 or higher
 - OpenAI API key with access to:
-  - text-embedding-3-large (for embeddings)
-  - gpt-4o-mini (for Q&A)
+  - text-embedding-3-large model (for embeddings generation)
+  - gpt-4o-mini model (for Q&A processing)
+  
+Note: Make sure your OpenAI API key has access to these models. New API keys may take 5-10 minutes to fully activate.
 - GitHub token (optional, but recommended for higher rate limits)
 
 ## Installation
@@ -28,8 +30,23 @@ cd <project-directory>
 
 2. Install required packages:
 ```bash
-pip install streamlit langchain-community langchain-openai faiss-cpu openai
+# Install pip packages (use --user flag if you're not using a virtual environment)
+python -m pip install --user streamlit==1.29.0 langchain-community==0.0.10 langchain-openai==0.0.2 langchain==0.1.0 faiss-cpu==1.7.4 numpy==1.24.3 openai==1.3.7 requests==2.31.0 sentence-transformers==2.2.2 torch==2.1.1 transformers==4.35.2
+
+# Verify streamlit installation
+python -m streamlit --version
 ```
+
+If you get "command not found" error when running streamlit, you can either:
+- Run using python -m: `python -m streamlit run main.py`
+- Add pip's binary directory to PATH (restart terminal after):
+  ```bash
+  # For Unix/Mac (add to ~/.bashrc or ~/.zshrc):
+  export PATH="$HOME/.local/bin:$PATH"
+  
+  # For Windows (add to User Environment Variables):
+  # Add %APPDATA%\Python\Python3x\Scripts to PATH
+  ```
 
 3. Set up environment variables:
 
@@ -78,16 +95,30 @@ Example questions:
 ## Troubleshooting
 
 1. **API Key Issues**:
-   - Ensure your OpenAI API key has access to required models
+   - Ensure your OpenAI API key is correctly set in the `.env` file
    - New API keys may take 5-10 minutes to fully activate
+   - If you see "model not found" errors, verify your API key has access to gpt-4o-mini and text-embedding-3-large models
 
-2. **Rate Limits**:
-   - If you encounter GitHub API rate limits, add a GitHub token
-   - For heavy usage, consider upgrading your OpenAI API tier
+2. **Installation Issues**:
+   - Make sure you're using Python 3.11 or higher: `python --version`
+   - If you encounter GPU-related errors, you can safely ignore them as we use CPU-only versions
+   - For package conflicts, try creating a fresh virtual environment:
+     ```bash
+     python -m venv venv
+     source venv/bin/activate  # On Windows: venv\Scripts\activate
+     pip install --upgrade pip
+     pip install -r requirements.txt
+     ```
 
-3. **Model Access**:
-   - If you see "model not found" errors, wait a few minutes for API access to propagate
-   - Verify your OpenAI account has access to required models
+3. **GitHub API Limits**:
+   - Without a token, you're limited to 60 requests per hour
+   - Add a GitHub token to increase this to 5000 requests per hour
+   - Create a token at: https://github.com/settings/tokens
+
+4. **Runtime Issues**:
+   - If the application seems slow, it's usually due to API rate limits or large repositories
+   - For better performance, ensure good internet connectivity
+   - The first run might be slower as it needs to download models and process the repository
 
 ## Architecture
 
