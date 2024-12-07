@@ -30,8 +30,15 @@ cd <project-directory>
 
 2. Install required packages:
 ```bash
-# Install pip packages (use --user flag if you're not using a virtual environment)
-python -m pip install --user streamlit==1.29.0 langchain-community==0.0.10 langchain-openai==0.0.2 langchain==0.1.0 faiss-cpu==1.7.4 numpy==1.24.3 openai==1.3.7 requests==2.31.0 sentence-transformers==2.2.2 torch==2.1.1 transformers==4.35.2
+# First, ensure you have the latest pip and development tools
+python -m pip install --upgrade pip setuptools wheel
+
+# For Windows users: Install additional required development tools
+python -m pip install python-dev-tools
+python -m pip install distutils-precedence
+
+# Install required packages (use --user flag if you're not using a virtual environment)
+python -m pip install --user streamlit==1.29.0 langchain-community==0.0.10 langchain-openai==0.0.2 langchain==0.1.0 faiss-cpu==1.7.4 numpy==1.24.3 openai>=1.6.1 requests==2.31.0 sentence-transformers==2.2.2 torch==2.1.1 transformers==4.35.2
 
 # Verify streamlit installation
 python -m streamlit --version
