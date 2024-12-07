@@ -28,7 +28,16 @@ git clone <repository-url>
 cd <project-directory>
 ```
 
-2. Install required packages:
+2. Install prerequisites:
+
+a. Install Rust (required for some Python packages):
+```bash
+# Windows: Download and run rustup-init.exe from https://rustup.rs/
+# After installation, restart your terminal
+rustup update
+```
+
+b. Install Python development tools:
 ```bash
 # First, ensure you have the latest pip and development tools
 python -m pip install --upgrade pip setuptools wheel
@@ -36,9 +45,17 @@ python -m pip install --upgrade pip setuptools wheel
 # For Windows users: Install additional required development tools
 python -m pip install python-dev-tools
 python -m pip install distutils-precedence
+```
 
+c. Install required packages:
+```bash
 # Install required packages (use --user flag if you're not using a virtual environment)
-python -m pip install --user streamlit==1.29.0 langchain-community==0.0.10 langchain-openai==0.0.2 langchain==0.1.0 faiss-cpu==1.7.4 numpy==1.24.3 openai>=1.6.1 requests==2.31.0 sentence-transformers==2.2.2 torch==2.1.1 transformers==4.35.2
+# Install them in groups to handle dependencies better
+python -m pip install --user numpy==1.24.3 requests==2.31.0
+python -m pip install --user torch==2.1.1
+python -m pip install --user streamlit==1.29.0 openai>=1.6.1
+python -m pip install --user langchain==0.1.0 langchain-community==0.0.10 langchain-openai==0.0.2
+python -m pip install --user faiss-cpu==1.7.4 sentence-transformers==2.2.2 transformers==4.35.2
 
 # Verify streamlit installation
 python -m streamlit --version
