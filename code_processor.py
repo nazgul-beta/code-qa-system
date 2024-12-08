@@ -39,15 +39,23 @@ def process_github_repo(owner, repo_name):
     documents = []
     
     try:
-        # Configure text splitter for code
+        # Configure text splitter optimized for code analysis
         text_splitter = RecursiveCharacterTextSplitter(
-            chunk_size=2000,  # Increased for better context
-            chunk_overlap=400,  # Increased overlap for better coherence
+            chunk_size=3000,  # Large enough to capture full functions/classes
+            chunk_overlap=500,  # Significant overlap for maintaining context
             length_function=len,
-            # Enhanced separators for code-aware splitting
+            # Comprehensive separators for intelligent code splitting
             separators=[
-                "\nclass ", "\ndef ", "\nfunction ", "\n\n",
-                "\n@", "\n    def ", "\n\n", "\n", " ", ""
+                # Class and function definitions
+                "\nclass ", "\ndef ", "\nfunction ", "\nasync def ",
+                # Decorators and special methods
+                "\n@", "\n    def ", "\n    async def ",
+                # JavaScript/TypeScript specific
+                "\nconst ", "\nlet ", "\nvar ", "\nexport ", "\nimport ",
+                # Common code blocks
+                "\nif __name__ == ", "\ntry:", "\nfor ", "\nwhile ",
+                # General structure
+                "\n\n", "\n", " ", ""
             ]
         )
 
