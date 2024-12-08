@@ -6,9 +6,35 @@ import os
 import re
 import requests
 import logging
+import sys
 
-logging.basicConfig(level=logging.INFO)
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 logger = logging.getLogger(__name__)
+
+# Add error handler for NumPy-related issues
+def handle_numpy_error():
+    error_message = """
+    NumPy initialization error detected. This is likely due to Windows compatibility issues.
+    
+    Please try the following steps:
+    1. Uninstall the current NumPy installation:
+       ```
+       python -m pip uninstall numpy
+       ```
+    2. Install the stable Windows version:
+       ```
+       python -m pip install numpy==1.26.2
+       ```
+    3. Restart the application
+    
+    If the issue persists, please check the troubleshooting section in the README.
+    """
+    st.error(error_message)
+    logger.error("NumPy initialization failed")
 
 # Configure Streamlit page
 st.set_page_config(
@@ -27,6 +53,15 @@ def extract_repo_info(github_url):
 
 def main():
     try:
+        # Try importing numpy here to catch any initialization errors
+        try:
+            import numpy as np
+            logger.info("NumPy initialized successfully")
+        except Exception as numpy_error:
+            logger.error(f"NumPy initialization error: {str(numpy_error)}")
+            handle_numpy_error()
+            return
+
         st.title("💻 Code Q&A System")
         st.write("Enter a GitHub repository URL to analyze its code!")
 
@@ -117,7 +152,27 @@ def main():
 
 if __name__ == "__main__":
     try:
+        # Check Python version
+        if sys.version_info < (3, 11):
+            st.error("This application requires Python 3.11 or higher. Please upgrade your Python installation.")
+            sys.exit(1)
+            
         main()
+    except ModuleNotFoundError as e:
+        module_name = str(e).split("'")[1]
+        st.error(f"""
+        Missing required module: {module_name}
+        
+        Please install the required package:
+        ```
+        python -m pip install {module_name}
+        ```
+        
+        If you're experiencing installation issues, please check the troubleshooting section in the README.
+        """)
+        logger.error(f"Missing module: {str(e)}")
     except Exception as e:
         st.error(f"Application error: {str(e)}")
         logger.error(f"Main application error: {str(e)}")
+        if "numpy" in str(e).lower():
+            handle_numpy_error()
