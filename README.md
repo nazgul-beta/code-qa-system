@@ -130,7 +130,20 @@ Example questions:
 
 ## Troubleshooting
 
-1. **Windows-Specific Issues**:
+1. **Python 3.13.0 Specific Issues**:
+   - If you encounter "No module named 'distutils'" error:
+     ```bash
+     # Install these packages in order:
+     python -m pip install setuptools
+     python -m pip install wheel
+     python -m pip install numpy==1.26.2
+     ```
+   - If you still have issues, try installing without dependencies:
+     ```bash
+     python -m pip install --no-deps numpy==1.26.2
+     ```
+
+2. **Windows-Specific Issues**:
    - If you encounter NumPy-related errors or segmentation faults:
      ```bash
      python -m pip uninstall numpy
