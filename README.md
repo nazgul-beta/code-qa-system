@@ -57,8 +57,14 @@ c. Install required packages:
 ```bash
 # Install required packages (use --user flag if you're not using a virtual environment)
 # Install them in groups to handle dependencies better
-python -m pip install --user numpy==1.24.3 requests==2.31.0
-python -m pip install --user torch==2.1.1
+# Install core dependencies first
+python -m pip install --user numpy==1.26.2  # Stable version for Windows
+python -m pip install --user requests==2.31.0
+
+# Install PyTorch (CPU version for better compatibility)
+python -m pip install --user torch==2.1.1 --index-url https://download.pytorch.org/whl/cpu
+
+# Install remaining packages
 python -m pip install --user streamlit==1.29.0 openai>=1.6.1
 python -m pip install --user langchain==0.1.0 langchain-community==0.0.10 langchain-openai==0.0.2
 python -m pip install --user faiss-cpu==1.7.4 sentence-transformers==2.2.2 transformers==4.35.2
@@ -124,7 +130,21 @@ Example questions:
 
 ## Troubleshooting
 
-1. **API Key Issues**:
+1. **Windows-Specific Issues**:
+   - If you encounter NumPy-related errors or segmentation faults:
+     ```bash
+     python -m pip uninstall numpy
+     python -m pip install numpy==1.26.2
+     ```
+   - For PyTorch issues, try installing the CPU-only version:
+     ```bash
+     python -m pip uninstall torch
+     python -m pip install torch==2.1.1 --index-url https://download.pytorch.org/whl/cpu
+     ```
+   - If you see "DLL load failed" errors, ensure you have the latest Visual C++ Redistributable:
+     - Download from: https://aka.ms/vs/17/release/vc_redist.x64.exe
+
+2. **API Key Issues**:
    - Ensure your OpenAI API key is correctly set in the `.env` file
    - New API keys may take 5-10 minutes to fully activate
    - If you see "model not found" errors, verify your API key has access to gpt-4o-mini and text-embedding-3-large models
