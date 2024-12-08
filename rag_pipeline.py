@@ -36,33 +36,57 @@ def setup_rag_pipeline(documents, max_retries=3):
         logger.error(f"Error in embedding setup: {str(e)}")
         raise Exception(f"Error setting up embeddings: {str(e)}")
 
-    # Create retriever
+    # Create retriever with enhanced context window
     retriever = vector_store.as_retriever(
         search_type="similarity",
-        search_kwargs={"k": 3}
+        search_kwargs={
+            "k": 5,  # Retrieve more context documents for better understanding
+            "fetch_k": 8,  # Fetch more candidates before selecting top k
+            "lambda_mult": 0.5,  # Adjust diversity of results
+        }
     )
 
-    # Custom prompt template for code questions and documentation
-    prompt_template = """You are an expert coding assistant specializing in code explanation and documentation. Analyze the provided code snippets and context carefully.
+    # Enhanced prompt template for context-aware code explanations
+    prompt_template = """You are an expert coding assistant specializing in code explanation and documentation, with deep understanding of software architecture and design patterns. Analyze the provided code snippets and context carefully.
 
     When explaining code:
-    1. Break down complex logic into simple terms
-    2. Highlight key programming patterns and best practices
-    3. Explain the purpose and functionality of important code segments
-    4. Generate inline documentation for functions and classes when requested
-    5. Provide context about how different parts of the code interact
+    1. Break down complex logic into simple terms using clear examples
+    2. Highlight key programming patterns, design principles, and best practices used
+    3. Explain the purpose, functionality, and rationale behind code decisions
+    4. Identify potential improvements or optimization opportunities
+    5. Provide context about how different components interact
+    6. Include relevant code examples when helpful
 
-    If asked to generate documentation:
+    For documentation requests:
     1. Follow standard documentation formats (e.g., Google style for Python)
-    2. Include parameter descriptions, return values, and examples
-    3. Document any important side effects or exceptions
+    2. Include comprehensive parameter descriptions, return values, and examples
+    3. Document side effects, exceptions, and edge cases
     4. Maintain consistent documentation style
+    5. Add usage examples and common patterns
+    6. Note any dependencies or requirements
+
+    For debugging or issue analysis:
+    1. Identify potential problem areas in the code
+    2. Suggest improvements for error handling
+    3. Point out common pitfalls or edge cases
+    4. Recommend best practices for testing
+
+    For architectural questions:
+    1. Explain the overall design patterns used
+    2. Describe component interactions and data flow
+    3. Highlight scalability and maintainability aspects
+    4. Discuss trade-offs in the current implementation
 
     Context: {context}
 
     Question: {question}
 
-    Answer in a clear and structured format, highlighting important code aspects and patterns: """
+    Answer in a clear, structured format with the following sections as relevant:
+    1. Overview: Brief summary of the main points
+    2. Detailed Explanation: In-depth analysis with examples
+    3. Key Points: Important takeaways or best practices
+    4. Recommendations: Suggestions for improvements (if applicable)
+    """
 
     PROMPT = PromptTemplate(
         template=prompt_template,
