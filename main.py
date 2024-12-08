@@ -159,18 +159,31 @@ if __name__ == "__main__":
             
         main()
     except ModuleNotFoundError as e:
-        module_name = str(e).split("'")[1]
-        st.error(f"""
-        Missing required module: {module_name}
+        error_msg = str(e)
+        module_name = error_msg.split("'")[1] if "'" in error_msg else error_msg
         
-        Please install the required package:
-        ```
-        python -m pip install {module_name}
-        ```
-        
-        If you're experiencing installation issues, please check the troubleshooting section in the README.
-        """)
-        logger.error(f"Missing module: {str(e)}")
+        if "distutils" in error_msg:
+            st.error("""
+            The distutils module is missing. This is common with Python 3.13.0.
+            Please install setuptools first:
+            ```
+            python -m pip install setuptools
+            python -m pip install wheel
+            python -m pip install numpy==1.26.2
+            ```
+            """)
+        else:
+            st.error(f"""
+            Missing required module: {module_name}
+            
+            Please install the required package:
+            ```
+            python -m pip install {module_name}
+            ```
+            
+            If you're experiencing installation issues, please check the troubleshooting section in the README.
+            """)
+        logger.error(f"Missing module: {error_msg}")
     except Exception as e:
         st.error(f"Application error: {str(e)}")
         logger.error(f"Main application error: {str(e)}")
