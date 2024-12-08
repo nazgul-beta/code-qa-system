@@ -32,8 +32,14 @@ cd <project-directory>
 
 a. Install Rust (required for some Python packages):
 ```bash
-# Windows: Download and run rustup-init.exe from https://rustup.rs/
-# After installation, restart your terminal
+# For Windows users:
+# 1. Download rustup-init.exe from https://rustup.rs/
+# 2. Double-click rustup-init.exe to run it
+# 3. Choose option 1 for the default installation
+# 4. After installation completes, close and reopen your terminal/command prompt
+# 5. Verify Rust installation:
+rustc --version
+cargo --version
 rustup update
 ```
 
