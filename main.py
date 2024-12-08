@@ -78,6 +78,9 @@ def main():
         if 'current_repo' not in st.session_state:
             st.session_state.current_repo = None
             logger.info("Initialized current_repo session state")
+        if 'code_documents' not in st.session_state:
+            st.session_state.code_documents = None
+            logger.info("Initialized code_documents session state")
     except Exception as e:
         st.error(f"Error initializing application: {str(e)}")
         logger.error(f"Initialization error: {str(e)}")
@@ -93,6 +96,7 @@ def main():
             st.session_state.repo_processed = False
             st.session_state.rag_pipeline = None
             st.session_state.current_repo = None
+            st.session_state.code_documents = None
             st.experimental_rerun()
 
     if github_url:
@@ -106,13 +110,18 @@ def main():
             st.session_state.current_repo = current_repo
         
         if owner and repo_name:
-            with st.spinner("Fetching and processing repository..."):
-                try:
-                    # Process repository and setup RAG pipeline
-                    code_documents = process_github_repo(owner, repo_name)
-                    st.session_state.rag_pipeline = setup_rag_pipeline(code_documents)
-                    st.session_state.repo_processed = True
-                    st.success(f"Successfully processed repository: {owner}/{repo_name}")
+            # Check if we need to process this repository
+            current_repo = f"{owner}/{repo_name}"
+            if current_repo != st.session_state.get('current_repo'):
+                with st.spinner("Fetching and processing repository..."):
+                    try:
+                        # Process repository and setup RAG pipeline
+                        code_documents = process_github_repo(owner, repo_name)
+                        st.session_state.code_documents = code_documents  # Store documents
+                        st.session_state.rag_pipeline = setup_rag_pipeline(code_documents)
+                        st.session_state.repo_processed = True
+                        st.session_state.current_repo = current_repo
+                        st.success(f"Successfully processed repository: {owner}/{repo_name}")
                 except Exception as e:
                     error_message = str(e)
                     if "api_key" in error_message.lower():
